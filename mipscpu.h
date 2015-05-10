@@ -14,11 +14,12 @@ class MipsCPU {
     int		PC;
 
 public:
-    const static int CRTadr=0x6000;
+    const static int CRTadr=0x4000; //40*26=1024=0x4000
     bool	refresh=false;
     MemoryManageUnit * MMU;
 public:
     MipsCPU();
+    ~MipsCPU();
     void boot();
     void run();
     void showRegs();

@@ -25,7 +25,12 @@ void MemoryManageUnit::load()
 {
     try{
         ifstream in("./mem.bin",ios::binary);
-        for(int i=0;!in.eof();i++) in.read((char*)&Memory[i],sizeof(short));	//ROM
+        if(!in.is_open()) throw exception();
+        for(int i=0;!in.eof();i++) {
+            in.read((char*)&Memory[i],sizeof(short));	//ROM
+            char tmp=(unsigned short)Memory[i]>>8;
+            Memory[i]=((Memory[i]<<8)&0xff00)|((unsigned short)tmp&0x00ff);
+        }
         in.close();
 
     }catch(exception e){

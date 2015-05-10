@@ -10,6 +10,7 @@
 MipsCPU::MipsCPU()
 {
     Rgf[0]=0;	//$zero
+    Rgf[29]=0x2000;    //$sp=0x2000
     MMU = new MemoryManageUnit( *this, MAXIUM);
     PC=0;
     memset(Rgf,0,32*4);
@@ -26,12 +27,12 @@ void MipsCPU::run()
     int step=1;
     for(;;){
         IR=MMU->lw(PC);
-        PC+=2;						//16-bit/byte
-//        cout << hex<<IR;
-//        cout << "step:" <<dec<< step << endl;
+        std::cout <<"IR="<<std::hex<<IR<<std::endl;
+        PC+=2;					//16-bit/byte
+        if(PC > MAXIUM) PC%=MAXIUM;
         step++;
-//            this->showRegs();
-
+//add $s1,$s2,$s3 = 0000 0010 0111 0001 1001 0000 0010 0000
+                     //0x02719020
 //R:	op:6,rs:5,rt:5,rd:5,sft:5,fun:6
 //I:	op:6,$rs:5,$rt:5,dat:16
 //J:	op:6,adr:26
@@ -43,9 +44,6 @@ void MipsCPU::run()
         fun=IR&63;
         dat=(int)(short)(IR&0xFFFF);
         adr=IR&0x3FFFFFF;
-//        cout <<"op="<<op<<endl << "fun="<< fun<<endl;
-//        cout <<"dat="<<dat<<endl;
-//        cout <<"rs="<<rs<<endl<<"rt="<<rt<<endl<<"rd="<<rd<<endl;
         switch(op){
             case 0:		//R-type
                 switch(fun){
@@ -81,6 +79,7 @@ void MipsCPU::run()
                         else Rgf[rd]=0;
                         break;
                     default:
+                        std::cout << "Error" << std::endl;
                         return;
                 }
                 break;
@@ -116,8 +115,15 @@ void MipsCPU::run()
         }
     }//for
 }
-void MipsCPU::showRegs() {
+
+void MipsCPU::showRegs()
+{
     for (int i=0; i<32; i++) {
         std::cout << "Reg[" <<std::dec<< i << "]=" << std::dec<<Rgf[i] << std::endl;
     }
+}
+
+MipsCPU::~MipsCPU()
+{
+    delete MMU;
 }

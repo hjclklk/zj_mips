@@ -13,6 +13,9 @@
 #include <QDataStream>
 #include <stdio.h>
 #include <string>
+#include "mipscpu.h"
+#include "memorymanageunit.h"
+
 //using namespace std;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -20,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //QString filename("d:\config2.txt");
-    loadFile(QString("D:\\config2.txt"));
+    loadFile(QString("./config2.txt"));
 }
 
 MainWindow::~MainWindow()
@@ -53,7 +56,7 @@ void MainWindow::loadFile(QString fileName)
     }
     //qDebug() << count;
     file.close();
-    QFile fileout("D:\\1.txt");
+    QFile fileout("./1.txt");
     if (!fileout.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QMessageBox::information(this,"error","can't open file");
@@ -63,10 +66,10 @@ void MainWindow::loadFile(QString fileName)
     out << text;
     //qDebug() << text;
     fileout.close();*/
-    loadRegisterFile(QString("D:\\register.txt"));
-    loadTypeFile(QString("D:\\type.txt"));
-    loadFuncFile(QString("D:\\function.txt"));
-    loadTypeIFile(QString("D:\\typeI.txt"));
+    loadRegisterFile(QString("./register.txt"));
+    loadTypeFile(QString("./type.txt"));
+    loadFuncFile(QString("./function.txt"));
+    loadTypeIFile(QString("./typeI.txt"));
 }
 void MainWindow::loadTypeIFile(QString fileName)
 {
@@ -189,7 +192,7 @@ void MainWindow::on_pushButton_clicked()
     mapForLabel.clear();
     mapForDefine.clear();
     // new file and empty file
-    QFile file("D:\\data");
+    QFile file("./data");
     file.open(QIODevice::WriteOnly);
     file.close();
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
@@ -364,7 +367,7 @@ void MainWindow::processMemory(QStringList MemoryList)
     // 5,6 "abcdefg",'a'
     mapForMemory.insert(MemoryList[0],memoryStart);
     bool ok;
-    QFile file("D:\\data");
+    QFile file("./data");
     file.open(QIODevice::WriteOnly);
     QDataStream out(&file);
     QStringList dataForMemory = MemoryList[2].split(QRegExp("\\s*,\\s*"),QString::SkipEmptyParts);
@@ -611,7 +614,7 @@ void MainWindow::processMessageError(QString error, int line)
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    //save ui->textBrowser->toPlainText() into benary file
+    //save ui->textBrowser->toPlainText() into binary file
     //qDebug() << ui->textBrowser->toPlainText();
     QFileDialog dialog(this);
     dialog.setWindowModality(Qt::WindowModal);
@@ -638,19 +641,19 @@ void MainWindow::on_pushButton_2_clicked()
     {
         s1=s.mid(i*33,32);
         j=s1.toInt(&ok,2);
-        a=0x0000|j;
+        a=0x0000|j;//right part short
         c=a;
-        a=a>>8;
+        a=(a>>8)&0x00ff;
         c=c<<8;
         a=a|c;
-        j=j>>16;
+        j=j>>16;//left part short
         b=0x0000|j;
         c=b;
-        b=b>>8;
+        b=(b>>8)&0x00ff;
         c=c<<8;
         b=b|c;
         fwrite(&b,2,1,f);
-        fwrite(&a,2,1,f);
+        fwrite(&a,2,1,f); //fixed something.
     }
     fclose(f);
 //    QFile file(fileName);
@@ -673,7 +676,7 @@ void MainWindow::on_pushButton_2_clicked()
 
 void MainWindow::on_pushButton_5_clicked()
 {
-    //save data into banery file
+    //save data into binary file
     QFileDialog dialog(this);
     dialog.setWindowModality(Qt::WindowModal);
     dialog.setAcceptMode(QFileDialog::AcceptSave);
@@ -692,7 +695,7 @@ void MainWindow::on_pushButton_5_clicked()
                              .arg(file.errorString()));
         return;
     }
-    QFile infile("D:\\data");
+    QFile infile("./data");
     infile.open(QIODevice::ReadOnly);
     QDataStream out(&file);
     QDataStream in(&infile);
@@ -711,5 +714,9 @@ void MainWindow::on_pushButton_5_clicked()
 
 void MainWindow::on_pushButton_4_clicked()
 {
-
+    MipsCPU tmpCPU;
+    tmpCPU.boot();
+    tmpCPU.run();
+    tmpCPU.showRegs();
+    tmpCPU.MMU->showMem();
 }
