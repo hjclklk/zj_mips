@@ -33,7 +33,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>PushButton</string>
+    <string>单步</string>
    </property>
   </widget>
   <widget class="QTextBrowser" name="textBrowser">
@@ -56,7 +56,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>PushButton</string>
+    <string>运行</string>
    </property>
   </widget>
   <widget class="QTableView" name="tableView_2">
