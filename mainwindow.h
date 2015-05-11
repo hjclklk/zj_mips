@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 #include <QMap>
-
+#include "cpu.h"
 using std::map;
 using std::string;
 
@@ -63,8 +63,10 @@ private:
     QMap<QString, QString> mapForDefine;
     QMap<QString, int> mapForLabel;
     QMap<QString, int> mapForMemory;
+
     QString DataStr;
     int memoryStart;
+    cpu *myCpu;
 };
 
 #endif // MAINWINDOW_H
