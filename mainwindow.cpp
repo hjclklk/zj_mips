@@ -13,9 +13,8 @@
 #include <QDataStream>
 #include <stdio.h>
 #include <string>
-#include "mipscpu.h"
-#include "memorymanageunit.h"
 
+QVector <QString> registerList;
 //using namespace std;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -66,10 +65,10 @@ void MainWindow::loadFile(QString fileName)
     out << text;
     //qDebug() << text;
     fileout.close();*/
-    loadRegisterFile(QString("./register.txt"));
-    loadTypeFile(QString("./type.txt"));
-    loadFuncFile(QString("./function.txt"));
-    loadTypeIFile(QString("./typeI.txt"));
+    loadRegisterFile(QString("d:\\register.txt"));
+    loadTypeFile(QString("d:\\type.txt"));
+    loadFuncFile(QString("d:\\function.txt"));
+    loadTypeIFile(QString("d:\\typeI.txt"));
 }
 void MainWindow::loadTypeIFile(QString fileName)
 {
@@ -115,6 +114,7 @@ void MainWindow::loadRegisterFile(QString fileName)
         textLine = textStream1.readLine();
         textLineList = textLine.split(QRegExp("\\s+"),QString::SkipEmptyParts);
         mapForRegister.insert(textLineList[0].toLower(),textLineList[1].toLower());
+        registerList.push_back(textLineList[0].toLower());
         //qDebug() << textLine;
     }
     file.close();
@@ -714,9 +714,7 @@ void MainWindow::on_pushButton_5_clicked()
 
 void MainWindow::on_pushButton_4_clicked()
 {
-    MipsCPU tmpCPU;
-    tmpCPU.boot();
-    tmpCPU.run();
-    tmpCPU.showRegs();
-    tmpCPU.MMU->showMem();
+
+    myCpuWidget = new cpu();
+    myCpuWidget->show();
 }

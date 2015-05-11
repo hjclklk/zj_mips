@@ -9,11 +9,11 @@
 
 MipsCPU::MipsCPU()
 {
+    memset(Rgf,0,32*4);
     Rgf[0]=0;	//$zero
     Rgf[29]=0x2000;    //$sp=0x2000
     MMU = new MemoryManageUnit( *this, MAXIUM);
     PC=0;
-    memset(Rgf,0,32*4);
 }
 
 void MipsCPU::boot()

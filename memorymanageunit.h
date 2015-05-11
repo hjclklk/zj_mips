@@ -10,10 +10,11 @@ class MipsCPU;
 class MemoryManageUnit
 {
     MipsCPU	* theCPU;
-    short * Memory;
+
     int		size;
 
 public:
+    short * Memory;
     MemoryManageUnit(MipsCPU &cpu, int m);
     void load();
     int lw(int adr);	//Big_Endian | Little_Endian

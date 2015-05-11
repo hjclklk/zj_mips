@@ -2,7 +2,7 @@
 #define CPU_H
 
 #include <QWidget>
-
+#include <QStandardItemModel>
 namespace Ui {
 class cpu;
 }
@@ -17,6 +17,8 @@ public:
 
 private:
     Ui::cpu *ui;
+    QStandardItemModel *registerModel;
+    QStandardItemModel *memoryModel;
 };
 
 #endif // CPU_H
