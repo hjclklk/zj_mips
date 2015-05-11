@@ -68,10 +68,10 @@ void MainWindow::loadFile(QString fileName)
     //qDebug() << text;
     fileout.close();*/
 //    qDebug() << QDir::currentPath() << endl;
-    loadRegisterFile(QString("../../../register.txt"));
-    loadTypeFile(QString("../../../type.txt"));
-    loadFuncFile(QString("../../../function.txt"));
-    loadTypeIFile(QString("../../../typeI.txt"));
+    loadRegisterFile(QString("./register.txt"));
+    loadTypeFile(QString("./type.txt"));
+    loadFuncFile(QString("./function.txt"));
+    loadTypeIFile(QString("./typeI.txt"));
 }
 
 void MainWindow::loadTypeIFile(QString fileName)
@@ -192,7 +192,7 @@ void MainWindow::on_pushButton_clicked()
     assembleCodeListEdit = assembleCode.split("\n");
     //qDebug() << assembleCodePerSentence.length();
     int line = 0; //recorder line when assemble
-    memoryStart = 0x10000000;
+    memoryStart = 0x1000;   //0x10000000 would be too large.
     mapForMemory.clear();
     mapForLabel.clear();
     mapForDefine.clear();
@@ -424,14 +424,16 @@ void MainWindow::list_to_low(QStringList &list)
 
 void MainWindow::processTypeR(QStringList sentenceList,int line)
 {   //!!发现不支持所有长度不为4的
-        qDebug() << sentenceList << endl;
+//        qDebug() << sentenceList << endl;
     if (sentenceList.size() != 4 && sentenceList[0]!="syscall" ) throw QString("This line don't match numbers of R function");//!! 这边R类型不一定是3个参数的...比如syscall
     ui->textBrowser->insertPlainText(TypeR);
     if (sentenceList.size() == 1 ) { //!! 这里仅是测试用，可能需要改一下
         ui->textBrowser->insertPlainText(EmptyFive);
         ui->textBrowser->insertPlainText(EmptyFive);
         ui->textBrowser->insertPlainText(EmptyFive);
+        ui->textBrowser->insertPlainText(EmptyFive);
         ui->textBrowser->insertPlainText(mapForFunc.value("syscall"));
+        ui->textBrowser->insertPlainText("\n");
         return;
     }
     if (mapForRegister.count(sentenceList[3]) == 0) throw QString("%1 don't match any register").arg(sentenceList[3]);
@@ -528,6 +530,7 @@ void MainWindow::processTypeI_5(QStringList sentenceList, int line)
     if (sentenceList.size() != 3) throw QString("Register list format error.");
     ui->textBrowser->insertPlainText(mapForType.value(sentenceList[0]));        //insert instruction opcode
     ui->textBrowser->insertPlainText(mapForRegister.value(sentenceList[1]));    //insert first reg
+    ui->textBrowser->insertPlainText(EmptyFive);
     bool ok; unsigned int imm = sentenceList[2].toInt(&ok);     //if imm is a integer
     if (ok) {
         ui->textBrowser->insertPlainText(change_10_to_2(sentenceList[2],10,2,16));
@@ -536,6 +539,7 @@ void MainWindow::processTypeI_5(QStringList sentenceList, int line)
         ui->textBrowser->insertPlainText(
                     change_num_to_str( mapForMemory.value(sentenceList[2]) , 16 ) );
     }
+    ui->textBrowser->insertPlainText("\n");
 }
 
 QString MainWindow::change_num_to_str(int number,int len)
@@ -745,6 +749,7 @@ void MainWindow::on_pushButton_5_clicked()
 void MainWindow::on_pushButton_4_clicked()
 {
 //    MipsCPU tmpCPU;
+//    qDebug() << "in run()" << endl;
 //    tmpCPU.boot();
 //    tmpCPU.run();
 //    tmpCPU.showRegs();

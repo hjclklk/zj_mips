@@ -6,7 +6,7 @@
 #include <cstring>
 #include <iostream>
 #include "MemoryManageUnit.h"
-
+using namespace std;
 MipsCPU::MipsCPU()
 {
     Rgf[0]=0;	//$zero
@@ -21,7 +21,7 @@ void MipsCPU::boot()
     MMU->load();	//!!ROM init
 }
 
-void MipsCPU::run()
+void MipsCPU::run(const int run_by_step=0)
 {
     int	IR, op, rd, rs, rt, sft, fun, dat, adr;
     int step=1;
@@ -111,11 +111,15 @@ void MipsCPU::run()
             case 8:     //addi
                 Rgf[rt]=Rgf[rs]+dat;
                 break;
+            case 15:    //lui
+                Rgf[rs]=dat;
+                break;
             default:
                 std::cout << "Error" << std::endl;
                 return;
 	        }
 
+            if(run_by_step) return ;
 	//        if(refresh){	//VM refresh
 	//            for(int i=0; i<40*26; i++){
 	//                std::cout << (char)MMU->lh(i+CRTadr) << std::endl;
@@ -123,7 +127,7 @@ void MipsCPU::run()
 	//            }	refresh=false;
 	//        }
 	    }//for
-	} catch(exception e ) {
+    } catch(exception e ) {
 		
 	}
 }
