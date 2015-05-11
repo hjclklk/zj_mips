@@ -14,7 +14,7 @@ class MipsCPU {
     int		PC;
 
 public:
-    const static int CRTadr=0x4000; //40*26=1024=0x4000
+    const static int CRTadr=0x7c00; //40*26=1024=0x400
     bool	refresh=false;
     MemoryManageUnit * MMU;
 public:
