@@ -19,5 +19,5 @@ private:
     Ui::cpu *ui;
     QStandardItemModel *registerModel;
     QStandardItemModel *memoryModel;
-
+};
 #endif // CPU_H

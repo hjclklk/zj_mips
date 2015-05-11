@@ -67,17 +67,20 @@ void MainWindow::loadFile(QString fileName)
     out << text;
     //qDebug() << text;
     fileout.close();*/
-    loadRegisterFile(QString("d:\\register.txt"));
-    loadTypeFile(QString("d:\\type.txt"));
-    loadFuncFile(QString("d:\\function.txt"));
-    loadTypeIFile(QString("d:\\typeI.txt"));
+//    qDebug() << QDir::currentPath() << endl;
+    loadRegisterFile(QString("../../../register.txt"));
+    loadTypeFile(QString("../../../type.txt"));
+    loadFuncFile(QString("../../../function.txt"));
+    loadTypeIFile(QString("../../../typeI.txt"));
 }
+
 void MainWindow::loadTypeIFile(QString fileName)
 {
     QString textLine;
     QStringList textLineList;
 
     QFile file(fileName);
+//    qDebug() << QDir::currentPath() << endl;
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(this,"error","can't open file");
@@ -199,18 +202,18 @@ void MainWindow::on_pushButton_clicked()
     file.close();
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     QDataStream out(&file);
-    out << qint8(01);
+    out << qint8(01);   //!!why? 求注释...
     file.close();
     try{
 
         editLine.push_back(0);
-        foreach (sentence,assembleCodeListEdit)
+        foreach (sentence,assembleCodeListEdit) //!!What does this foreach do? 格式指令和伪指令？
         {
             QString Str = sentence;
             DefineList = sentence.simplified().split(QRegExp("\\s+"),QString::SkipEmptyParts);
             if (Str.simplified() == "") continue;
             int indexOfLabel = sentence.lastIndexOf(":");
-            if (indexOfLabel == -1){
+            if (indexOfLabel == -1){    //格式指令或者标签
 
             }
             else{
@@ -226,7 +229,7 @@ void MainWindow::on_pushButton_clicked()
                else
                    continue;
             }
-            if (DefineList[0] == "MOVE"){
+            if (DefineList[0] == "MOVE"){// 伪指令
                 if (DefineList.size() != 3) throw QString("don't match MOVE instruction");
                 if (mapForRegister.count(DefineList[1]) == 0) throw QString("%1 don't match any register").arg(DefineList[1]);
                 if (mapForRegister.count(DefineList[2]) == 0) throw QString("%1 don't match any register").arg(DefineList[2]);
@@ -289,7 +292,7 @@ void MainWindow::on_pushButton_clicked()
             if (DefineList.size() == 3 && DefineList[1] == "equ"){
                processDefine(DefineList);
                continue;
-            }else if (DefineList.size() == 3 && DefineList[1].indexOf(QRegExp(".[\\d]?byte")) != -1){
+            }else if (DefineList.size() == 3 && DefineList[1].indexOf(QRegExp(".[\\d]?byte")) != -1){   //!!我记得格式指令的变量名后面也跟着“：”
                processMemory(DefineList);
                continue;
             }
@@ -300,7 +303,7 @@ void MainWindow::on_pushButton_clicked()
 //        foreach (sentence,assembleCodeList)
 //            qDebug() << sentence;
         line = 0; //recorder line when assemble
-        foreach (sentence,assembleCodeList)
+        foreach (sentence,assembleCodeList)//!! 这边是正常的mips指令
         {
             line++;
             sentenceList = sentence.simplified().split(QRegExp("\\s*,\\s*"),QString::SkipEmptyParts);
@@ -331,6 +334,8 @@ void MainWindow::on_pushButton_clicked()
                         processTypeI_2(sentenceList,line);
                     else if (mapForType_I.value(sentenceList[0]) == "3") //like lw
                         processTypeI_3(sentenceList,line);
+                    else if (mapForType_I.value(sentenceList[0]) == "5") //lui $reg, immediate
+                        processTypeI_5(sentenceList,line);
                 }
             }
             else
@@ -377,15 +382,15 @@ void MainWindow::processMemory(QStringList MemoryList)
     if (width == 1){
         foreach(QString tempData,dataForMemory){
             int temp = tempData.toInt(&ok);
-            if (ok){
+            if (ok){    // integer byte
                 out << qint8(temp);
                 memoryStart += 1;
                 qDebug() << temp;
-            }else if (tempData.size() == 3 && tempData[0] == '\'' && tempData[2] == '\''){
+            }else if (tempData.size() == 3 && tempData[0] == '\'' && tempData[2] == '\''){  //char byte
                 QChar tempc = tempData[1];
                 out << qint8(tempc.toLatin1());
                 memoryStart += 1;
-            }else if (tempData[0] == '"' && tempData[tempData.size()-1] == '"'){
+            }else if (tempData[0] == '"' && tempData[tempData.size()-1] == '"'){    //string byte???
                 for (int i = 1; i < tempData.size()-1; ++i){
                     QChar tempc = tempData[i];
                     out << qint8(tempc.toLatin1());
@@ -418,14 +423,22 @@ void MainWindow::list_to_low(QStringList &list)
 }
 
 void MainWindow::processTypeR(QStringList sentenceList,int line)
-{
-    if (sentenceList.size() != 4) throw QString("This line don't match numbers of R function");
+{   //!!发现不支持所有长度不为4的
+        qDebug() << sentenceList << endl;
+    if (sentenceList.size() != 4 && sentenceList[0]!="syscall" ) throw QString("This line don't match numbers of R function");//!! 这边R类型不一定是3个参数的...比如syscall
     ui->textBrowser->insertPlainText(TypeR);
+    if (sentenceList.size() == 1 ) { //!! 这里仅是测试用，可能需要改一下
+        ui->textBrowser->insertPlainText(EmptyFive);
+        ui->textBrowser->insertPlainText(EmptyFive);
+        ui->textBrowser->insertPlainText(EmptyFive);
+        ui->textBrowser->insertPlainText(mapForFunc.value("syscall"));
+        return;
+    }
     if (mapForRegister.count(sentenceList[3]) == 0) throw QString("%1 don't match any register").arg(sentenceList[3]);
     if (mapForRegister.count(sentenceList[1]) == 0) throw QString("%1 don't match any register").arg(sentenceList[1]);
     if (mapForRegister.count(sentenceList[2]) == 0) throw QString("%1 don't match any register").arg(sentenceList[2]);
     if (mapForFunc.count(sentenceList[0]) == 0) throw QString("%1 don't match any function").arg(sentenceList[0]);
-
+//    qDebug() << sentenceList << endl;
     ui->textBrowser->insertPlainText(mapForRegister.value(sentenceList[3]));
     ui->textBrowser->insertPlainText(mapForRegister.value(sentenceList[1]));
     ui->textBrowser->insertPlainText(mapForRegister.value(sentenceList[2]));
@@ -508,6 +521,21 @@ void MainWindow::processTypeI_3(QStringList sentenceList,int line)
 //    ui->textBrowser->insertPlainText(":");
     ui->textBrowser->insertPlainText(str);
     ui->textBrowser->insertPlainText("\n");
+}
+
+void MainWindow::processTypeI_5(QStringList sentenceList, int line)
+{   //  lui $reg, imm
+    if (sentenceList.size() != 3) throw QString("Register list format error.");
+    ui->textBrowser->insertPlainText(mapForType.value(sentenceList[0]));        //insert instruction opcode
+    ui->textBrowser->insertPlainText(mapForRegister.value(sentenceList[1]));    //insert first reg
+    bool ok; unsigned int imm = sentenceList[2].toInt(&ok);     //if imm is a integer
+    if (ok) {
+        ui->textBrowser->insertPlainText(change_10_to_2(sentenceList[2],10,2,16));
+    } else {       //else imm is a memory label
+        if(mapForMemory.count(sentenceList[2]) == 0 ) throw QString("Label not defined.");
+        ui->textBrowser->insertPlainText(
+                    change_num_to_str( mapForMemory.value(sentenceList[2]) , 16 ) );
+    }
 }
 
 QString MainWindow::change_num_to_str(int number,int len)

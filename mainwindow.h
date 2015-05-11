@@ -7,6 +7,7 @@
 #include <string>
 #include <QMap>
 #include "cpu.h"
+#include <iostream>
 using std::map;
 using std::string;
 
@@ -41,6 +42,7 @@ public:
     void processTypeI_1(QStringList sentenceList,int line);
     void processTypeI_2(QStringList sentenceList,int line);
     void processTypeI_3(QStringList sentenceList,int line);
+    void processTypeI_5(QStringList sentenceList, int line);
     void processMemory(QStringList MemoryList);
     void processMessageError(QString error,int line);
     void pseudoInstruction(int& line, std::vector<int>& editLine,QString &Str ,QStringList &Strlist);

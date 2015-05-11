@@ -22,7 +22,7 @@ MemoryManageUnit::MemoryManageUnit(MipsCPU &cpu, int m)
 }
 
 void MemoryManageUnit::load()
-{
+{	//load from a binary file by 8-bit, the file is big-endian. read() by little-endian.
     try{
         ifstream in("./mem.bin",ios::binary);
         if(!in.is_open()) throw exception();
@@ -57,7 +57,7 @@ int MemoryManageUnit::lh(int adr)
 void MemoryManageUnit::sh(int adr, int dat)
 {
     Memory[adr]=(short)(dat&0xFFFF);
-    if(adr>theCPU->CRTadr) theCPU->refresh=true;
+//    if(adr>theCPU->CRTadr) theCPU->refresh=true;
 }
 
 void MemoryManageUnit::showMem()

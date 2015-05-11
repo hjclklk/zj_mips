@@ -51,6 +51,14 @@ void MipsCPU::run()
 //                        case 13:    //break
                     //!!
 //                            break;
+                    case 12:    //syscall
+                        switch(Rgf[2]) {    //$v0
+                        case 10:    //exit
+                            return;
+                        default:
+                            exit(1);
+                        }
+                        break;
                     case 26:    //div
                         Rgf[rd]=Rgf[rs]/Rgf[rt];
                         break;
@@ -107,12 +115,12 @@ void MipsCPU::run()
                 return;
         }
 
-        if(refresh){	//VM refresh
-            for(int i=0; i<40*26; i++){
-                std::cout << (char)MMU->lh(i+CRTadr) << std::endl;
+//        if(refresh){	//VM refresh
+//            for(int i=0; i<40*26; i++){
+//                std::cout << (char)MMU->lh(i+CRTadr) << std::endl;
 //				ZBHZ.draw(i%40,i/40,MMU.lh(i+CRTadr));
-            }	refresh=false;
-        }
+//            }	refresh=false;
+//        }
     }//for
 }
 
