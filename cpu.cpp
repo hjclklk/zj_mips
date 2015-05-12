@@ -1,7 +1,10 @@
 #include "cpu.h"
 #include "ui_cpu.h"
 #include <QDebug>
+#include "mipscpu.h"
+#include "memorymanageunit.h"
 
+extern QVector<QString> registerList;
 
 cpu::cpu(QWidget *parent) :
     QWidget(parent),
@@ -11,6 +14,7 @@ cpu::cpu(QWidget *parent) :
 
     tmpCPU.boot();
 
+    MipsCPU *myMipsCPU = new MipsCPU;
 
     QString tempRegister;
     QString registerTempData,temp,memoryrTempData;
@@ -48,7 +52,6 @@ cpu::~cpu()
     delete ui;
 }
 
-<<<<<<< HEAD
 void cpu::on_pushButton_2_clicked()
 {
     tmpCPU.boot();
@@ -112,5 +115,5 @@ void cpu::on_pushButton_clicked()
     }
     this->ui->tableView->setModel(registerModel);
     this->ui->tableView_2->setModel(memoryModel);
-=======
+}
 

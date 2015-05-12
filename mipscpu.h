@@ -10,7 +10,6 @@ class MemoryManageUnit;
 class MipsCPU {
     const static int MAXIUM=0x8000; //0-0x0040 reserved, 0x0040-0x1000 text,
                                         //0x1000-0x1080 static,
-<<<<<<< HEAD
                                         //0x1080-0x8000 dynamic.
     int		PC;
 
