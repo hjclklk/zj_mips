@@ -9,11 +9,12 @@ class MipsCPU;
 
 class MemoryManageUnit
 {
-public:
     MipsCPU	* theCPU;
-    short * Memory;
     int		size;
 
+public:
+    short * Memory;
+    int Size;
 public:
     MemoryManageUnit(MipsCPU &cpu, int m);
     void load();

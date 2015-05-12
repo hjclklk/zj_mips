@@ -2,7 +2,7 @@
 // Created by Shor on 2015/5/10.
 //
 
-#include "memorymanageunit.h"
+#include "MemoryManageUnit.h"
 #include "MipsCPU.h"
 #include <stdio.h>
 #include <iostream>
@@ -23,6 +23,7 @@ MemoryManageUnit::MemoryManageUnit(MipsCPU &cpu, int m)
 
 void MemoryManageUnit::load()
 {	//load from a binary file by 8-bit, the file is big-endian. read() by little-endian.
+    memset(Memory, 0, size*2);
     try{
         ifstream data("d:\\data",ios::binary);    //data segment
         if(!data.is_open()) throw exception();
@@ -38,7 +39,8 @@ void MemoryManageUnit::load()
 
         ifstream in("d:\\mem.bin",ios::binary);   //instruction segment
         if(!in.is_open()) throw exception();
-        for(int i=0x0040;!in.eof();i++) {
+        int i;
+        for(i=0x0040;!in.eof();i++) {
 
             if(i>=0x1000) throw exception();
 
@@ -46,6 +48,7 @@ void MemoryManageUnit::load()
             char tmp=(unsigned short)Memory[i]>>8;
             Memory[i]=((Memory[i]<<8)&0xff00)|((unsigned short)tmp&0x00ff);
         }
+        Size = i;
         in.close();
 
     }catch(exception e){

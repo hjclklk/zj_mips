@@ -20,11 +20,14 @@ public:
 private slots:
     void on_pushButton_clicked();
 
+    void on_pushButton_2_clicked();
+
 private:
     Ui::cpu *ui;
+    MipsCPU *tmpCPU;
     QStandardItemModel *registerModel;
     QStandardItemModel *memoryModel;
-    MipsCPU *myMipsCPU;
+    int runLine;
 };
 
 #endif // CPU_H
