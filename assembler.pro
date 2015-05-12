@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     memorymanageunit.cpp \
     mipscpu.cpp \
-    cpu.cpp
+    cpu.cpp \
+    binary.cpp
 
 HEADERS  += mainwindow.h \
     memorymanageunit.h \
     mipscpu.h \
-    cpu.h
+    cpu.h \
+    binary.h
 
 FORMS    += mainwindow.ui \
     cpu.ui

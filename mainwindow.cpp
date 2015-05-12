@@ -14,10 +14,8 @@
 #include <QDataStream>
 #include <stdio.h>
 #include <string>
-#include "mipscpu.h"
-#include "memorymanageunit.h"
-#include "cpu.h"
-QVector<QString> listForRegister;
+
+QVector <QString> registerList;
 //using namespace std;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -68,20 +66,17 @@ void MainWindow::loadFile(QString fileName)
     out << text;
     //qDebug() << text;
     fileout.close();*/
-//    qDebug() << QDir::currentPath() << endl;
     loadRegisterFile(QString("./register.txt"));
     loadTypeFile(QString("./type.txt"));
     loadFuncFile(QString("./function.txt"));
     loadTypeIFile(QString("./typeI.txt"));
 }
-
 void MainWindow::loadTypeIFile(QString fileName)
 {
     QString textLine;
     QStringList textLineList;
 
     QFile file(fileName);
-//    qDebug() << QDir::currentPath() << endl;
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(this,"error","can't open file");
@@ -120,7 +115,7 @@ void MainWindow::loadRegisterFile(QString fileName)
         textLine = textStream1.readLine();
         textLineList = textLine.split(QRegExp("\\s+"),QString::SkipEmptyParts);
         mapForRegister.insert(textLineList[0].toLower(),textLineList[1].toLower());
-        listForRegister.push_back(textLineList[0].toLower());
+        registerList.push_back(textLineList[0].toLower());
         //qDebug() << textLine;
     }
     file.close();
@@ -193,7 +188,7 @@ void MainWindow::on_pushButton_clicked()
     assembleCodeListEdit = assembleCode.split("\n");
     //qDebug() << assembleCodePerSentence.length();
     int line = 0; //recorder line when assemble
-    memoryStart = 0x1000;   //0x10000000 would be too large.
+    memoryStart = 0x10000000;
     mapForMemory.clear();
     mapForLabel.clear();
     mapForDefine.clear();
@@ -203,18 +198,18 @@ void MainWindow::on_pushButton_clicked()
     file.close();
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     QDataStream out(&file);
-    out << qint8(01);   //!!why? 求注释...
+    out << qint8(01);
     file.close();
     try{
 
         editLine.push_back(0);
-        foreach (sentence,assembleCodeListEdit) //!!What does this foreach do? 格式指令和伪指令？
+        foreach (sentence,assembleCodeListEdit)
         {
             QString Str = sentence;
             DefineList = sentence.simplified().split(QRegExp("\\s+"),QString::SkipEmptyParts);
             if (Str.simplified() == "") continue;
             int indexOfLabel = sentence.lastIndexOf(":");
-            if (indexOfLabel == -1){    //格式指令或者标签
+            if (indexOfLabel == -1){
 
             }
             else{
@@ -230,7 +225,7 @@ void MainWindow::on_pushButton_clicked()
                else
                    continue;
             }
-            if (DefineList[0] == "MOVE"){// 伪指令
+            if (DefineList[0] == "MOVE"){
                 if (DefineList.size() != 3) throw QString("don't match MOVE instruction");
                 if (mapForRegister.count(DefineList[1]) == 0) throw QString("%1 don't match any register").arg(DefineList[1]);
                 if (mapForRegister.count(DefineList[2]) == 0) throw QString("%1 don't match any register").arg(DefineList[2]);
@@ -293,7 +288,7 @@ void MainWindow::on_pushButton_clicked()
             if (DefineList.size() == 3 && DefineList[1] == "equ"){
                processDefine(DefineList);
                continue;
-            }else if (DefineList.size() == 3 && DefineList[1].indexOf(QRegExp(".[\\d]?byte")) != -1){   //!!我记得格式指令的变量名后面也跟着“：”
+            }else if (DefineList.size() == 3 && DefineList[1].indexOf(QRegExp(".[\\d]?byte")) != -1){
                processMemory(DefineList);
                continue;
             }
@@ -304,7 +299,7 @@ void MainWindow::on_pushButton_clicked()
 //        foreach (sentence,assembleCodeList)
 //            qDebug() << sentence;
         line = 0; //recorder line when assemble
-        foreach (sentence,assembleCodeList)//!! 这边是正常的mips指令
+        foreach (sentence,assembleCodeList)
         {
             line++;
             sentenceList = sentence.simplified().split(QRegExp("\\s*,\\s*"),QString::SkipEmptyParts);
@@ -383,15 +378,15 @@ void MainWindow::processMemory(QStringList MemoryList)
     if (width == 1){
         foreach(QString tempData,dataForMemory){
             int temp = tempData.toInt(&ok);
-            if (ok){    // integer byte
+            if (ok){
                 out << qint8(temp);
                 memoryStart += 1;
                 qDebug() << temp;
-            }else if (tempData.size() == 3 && tempData[0] == '\'' && tempData[2] == '\''){  //char byte
+            }else if (tempData.size() == 3 && tempData[0] == '\'' && tempData[2] == '\''){
                 QChar tempc = tempData[1];
                 out << qint8(tempc.toLatin1());
                 memoryStart += 1;
-            }else if (tempData[0] == '"' && tempData[tempData.size()-1] == '"'){    //string byte???
+            }else if (tempData[0] == '"' && tempData[tempData.size()-1] == '"'){
                 for (int i = 1; i < tempData.size()-1; ++i){
                     QChar tempc = tempData[i];
                     out << qint8(tempc.toLatin1());
@@ -424,10 +419,9 @@ void MainWindow::list_to_low(QStringList &list)
 }
 
 void MainWindow::processTypeR(QStringList sentenceList,int line)
-{   //!!发现不支持所有长度不为4的
+{//!!发现不支持所有长度不为4的
 //        qDebug() << sentenceList << endl;
-    if (sentenceList.size() != 4 && sentenceList[0]!="syscall" ) throw QString("This line don't match numbers of R function");//!! 这边R类型不一定是3个参数的...比如syscall
-    ui->textBrowser->insertPlainText(TypeR);
+    if (sentenceList.size() != 4 && sentenceList[0]!="syscall" ) throw QString("This line don't match numbers of R function");//!! 这边R类型不一定是3个参数的...比如syscall    ui->textBrowser->insertPlainText(TypeR);
     if (sentenceList.size() == 1 ) { //!! 这里仅是测试用，可能需要改一下
         ui->textBrowser->insertPlainText(EmptyFive);
         ui->textBrowser->insertPlainText(EmptyFive);
@@ -749,16 +743,9 @@ void MainWindow::on_pushButton_5_clicked()
 
 void MainWindow::on_pushButton_4_clicked()
 {
-//    MipsCPU tmpCPU;
-//    qDebug() << "in run()" << endl;
-//    tmpCPU.boot();
-//    tmpCPU.run();
-//    tmpCPU.showRegs();
-//    tmpCPU.MMU->showMem();
 
-    myCpu = new cpu;
-    this->hide();
-    myCpu->show();
+    myCpuWidget = new cpu();
+    myCpuWidget->show();
 }
 
 void MainWindow::on_pushButton_3_clicked()

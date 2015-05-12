@@ -10,8 +10,10 @@ class MipsCPU;
 class MemoryManageUnit
 {
     MipsCPU	* theCPU;
-    short * Memory;
     int		size;
+
+public:
+    short * Memory;
 
 public:
     MemoryManageUnit(MipsCPU &cpu, int m);

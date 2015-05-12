@@ -20,4 +20,5 @@ private:
     QStandardItemModel *registerModel;
     QStandardItemModel *memoryModel;
 };
+
 #endif // CPU_H
