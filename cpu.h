@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QStandardItemModel>
 #include "mipscpu.h"
+
 namespace Ui {
 class cpu;
 }
@@ -25,6 +26,7 @@ private:
     Ui::cpu *ui;
     QStandardItemModel *registerModel;
     QStandardItemModel *memoryModel;
+
     MipsCPU tmpCPU;
 };
 

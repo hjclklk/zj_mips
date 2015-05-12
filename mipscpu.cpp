@@ -2,7 +2,7 @@
 // Created by Shor on 2015/5/10.
 //
 
-#include "MipsCPU.h"
+#include "mipscpu.h"
 #include <cstring>
 #include <iostream>
 #include "MemoryManageUnit.h"
@@ -15,6 +15,7 @@ MipsCPU::MipsCPU()
     Rgf[29]=0x7ffc;     //$sp=0x7ffc, on top of mem
     MMU = new MemoryManageUnit( *this, MAXIUM);
     PC=0x0040;          //text(instruction part of mem) start from 0x0040
+
     memset(Rgf,0,32*4);
 }
 
@@ -27,8 +28,10 @@ void MipsCPU::boot()
 
 void MipsCPU::run(const int run_by_step)
 {
+    const int run_by_step=0;
     int	IR, op, rd, rs, rt, sft, fun, dat, adr;
     int step=1;
+<<<<<<< HEAD
     
 	try{
 		for(;;){
@@ -85,6 +88,7 @@ void MipsCPU::run(const int run_by_step)
                 case 36:    //and
                     Rgf[rd]=Rgf[rs]&Rgf[rt];
                     break;
+<<<<<<< HEAD
                 case 38:    //xor
                     Rgf[rd]=Rgf[rs]^Rgf[rt];
                     break;
@@ -93,6 +97,7 @@ void MipsCPU::run(const int run_by_step)
                     else Rgf[rd]=0;
                     break;
                 default:
+<<<<<<< HEAD
                     throw runtime_error("This R-type instruction is not yet supported") ;
                     return;
                 }
@@ -138,6 +143,7 @@ void MipsCPU::run(const int run_by_step)
             case 8:     //addi
                 Rgf[rt]=Rgf[rs]+dat;
                 break;
+<<<<<<< HEAD
             case 9:     //addiu
                 Rgf[rt]=Rgf[rs]+((int)dat&0x0000ffff);
                 break;
@@ -179,6 +185,7 @@ void MipsCPU::run(const int run_by_step)
             default:
                 throw runtime_error("This instruction is not yet supported");
                 return;
+<<<<<<< HEAD
 	        }
 
             if(run_by_step) return ;
