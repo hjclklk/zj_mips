@@ -198,7 +198,7 @@ void MainWindow::on_pushButton_clicked()
     file.close();
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     QDataStream out(&file);
-    out << qint8(01);
+    //out << qint8(01);
     file.close();
     try{
 
@@ -627,7 +627,7 @@ void MainWindow::on_pushButton_2_clicked()
         return;
     }
     QString fileName = files.at(0);
-
+/*
     bool ok;
     QString s,s1;
     FILE *f;
@@ -656,23 +656,23 @@ void MainWindow::on_pushButton_2_clicked()
         fwrite(&b,2,1,f);
         fwrite(&a,2,1,f); //fixed something.
     }
-    fclose(f);
-//    QFile file(fileName);
-//    if (!file.open(QFile::WriteOnly)) {
-//        QMessageBox::warning(this, tr("Application"),
-//                             tr("Cannot write file %1:\n%2.")
-//                             .arg(fileName)
-//                             .arg(file.errorString()));
-//        return;
-//    }
-//    QDataStream out(&file);
-//    QStringList sentenceList = ui->textBrowser->toPlainText().split("\n",QString::SkipEmptyParts);
-//    foreach (QString sentence,sentenceList){
-//        bool ok;
-//        //qDebug() << sentence.toInt(&ok,2);
-//        out << quint32(sentence.toInt(&ok,2));
-//    }
-//    file.close();
+    fclose(f);*/
+    QFile file(fileName);
+    if (!file.open(QFile::WriteOnly)) {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("Cannot write file %1:\n%2.")
+                             .arg(fileName)
+                             .arg(file.errorString()));
+        return;
+    }
+    QDataStream out(&file);
+    QStringList sentenceList = ui->textBrowser->toPlainText().split("\n",QString::SkipEmptyParts);
+    foreach (QString sentence,sentenceList){
+        bool ok;
+        //qDebug() << sentence.toInt(&ok,2);
+        out << quint32(sentence.toInt(&ok,2));
+    }
+    file.close();
 }
 
 void MainWindow::on_pushButton_5_clicked()

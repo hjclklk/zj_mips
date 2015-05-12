@@ -2,7 +2,7 @@
 // Created by Shor on 2015/5/10.
 //
 
-#include "MemoryManageUnit.h"
+#include "memorymanageunit.h"
 #include "MipsCPU.h"
 #include <stdio.h>
 #include <iostream>
@@ -22,18 +22,34 @@ MemoryManageUnit::MemoryManageUnit(MipsCPU &cpu, int m)
 }
 
 void MemoryManageUnit::load()
-{
+{	//load from a binary file by 8-bit, the file is big-endian. read() by little-endian.
     try{
-        ifstream in("./mem.bin",ios::binary);
+        ifstream data("d:\\data",ios::binary);    //data segment
+        if(!data.is_open()) throw exception();
+        for(int i=0x1000;!data.eof();i++) {
+
+            if(i>=0x1080) throw exception();
+
+            data.read((char*)&Memory[i],sizeof(short));
+            char tmp=(unsigned short)Memory[i]>>8;
+            Memory[i]=((Memory[i]<<8)&0xff00)|((unsigned short)tmp&0x00ff);
+        }
+        data.close();
+
+        ifstream in("d:\\mem.bin",ios::binary);   //instruction segment
         if(!in.is_open()) throw exception();
-        for(int i=0;!in.eof();i++) {
-            in.read((char*)&Memory[i],sizeof(short));	//ROM
+        for(int i=0x0040;!in.eof();i++) {
+
+            if(i>=0x1000) throw exception();
+
+            in.read((char*)&Memory[i],sizeof(short));
             char tmp=(unsigned short)Memory[i]>>8;
             Memory[i]=((Memory[i]<<8)&0xff00)|((unsigned short)tmp&0x00ff);
         }
         in.close();
 
     }catch(exception e){
+        cout << "exception caught in load()" << endl;
         exit(1);
     }
 }
@@ -57,7 +73,7 @@ int MemoryManageUnit::lh(int adr)
 void MemoryManageUnit::sh(int adr, int dat)
 {
     Memory[adr]=(short)(dat&0xFFFF);
-    if(adr>theCPU->CRTadr) theCPU->refresh=true;
+//    if(adr>theCPU->CRTadr) theCPU->refresh=true;
 }
 
 void MemoryManageUnit::showMem()
