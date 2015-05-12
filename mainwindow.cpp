@@ -422,6 +422,7 @@ void MainWindow::processTypeR(QStringList sentenceList,int line)
 {//!!发现不支持所有长度不为4的
 //        qDebug() << sentenceList << endl;
     if (sentenceList.size() != 4 && sentenceList[0]!="syscall" ) throw QString("This line don't match numbers of R function");//!! 这边R类型不一定是3个参数的...比如syscall    ui->textBrowser->insertPlainText(TypeR);
+    ui->textBrowser->insertPlainText(mapForType.value(sentenceList[0]));
     if (sentenceList.size() == 1 ) { //!! 这里仅是测试用，可能需要改一下
         ui->textBrowser->insertPlainText(EmptyFive);
         ui->textBrowser->insertPlainText(EmptyFive);

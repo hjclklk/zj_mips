@@ -23,6 +23,7 @@ MemoryManageUnit::MemoryManageUnit(MipsCPU &cpu, int m)
 
 void MemoryManageUnit::load()
 {	//load from a binary file by 8-bit, the file is big-endian. read() by little-endian.
+    memset(Memory, 0, size*2);                  //init mem
     try{
         ifstream data("./data",ios::binary);    //data segment
         if(!data.is_open()) throw exception();

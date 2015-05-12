@@ -11,19 +11,21 @@
 using namespace std;
 MipsCPU::MipsCPU()
 {
-    Rgf[0]=0;	//$zero
-    Rgf[29]=0x7ffc;    //$sp=0x7ffc, on top of mem
+    Rgf[0]=0;           //$zero
+    Rgf[29]=0x7ffc;     //$sp=0x7ffc, on top of mem
     MMU = new MemoryManageUnit( *this, MAXIUM);
-    PC=0x0040;      //text(instruction part of mem) start from 0x0040
+    PC=0x0040;          //text(instruction part of mem) start from 0x0040
     memset(Rgf,0,32*4);
 }
 
 void MipsCPU::boot()
 {
-    MMU->load();	//!!ROM init
+    MMU->load();        //ROM init
+    memset(Rgf,0,32*4); //Regfile init
+    PC=0x0040;          //PC init
 }
 
-void MipsCPU::run(const int run_by_step=0)
+void MipsCPU::run(const int run_by_step)
 {
     int	IR, op, rd, rs, rt, sft, fun, dat, adr;
     int step=1;
@@ -45,15 +47,15 @@ void MipsCPU::run(const int run_by_step=0)
 	        adr=IR&0x3FFFFFF;
 	        
             switch(op){
-	        case 0:		//R-type
+            case 0:         //R-type
                 switch(fun){
-                case 8:     //jrruntime_error
+                case 8:     //jr
                     if(Rgf[rs]>=0x1000||Rgf[rs]<0x0040) throw runtime_error("JR out of range");
                     PC = Rgf[rs];
                     break;
                 case 12:    //syscall
                     switch(Rgf[2]) {    //$v0
-                    case 10:    //exit
+                    case 10://exit
                         return;
                     default:
                         exit(1);
@@ -87,7 +89,6 @@ void MipsCPU::run(const int run_by_step=0)
                     Rgf[rd]=Rgf[rs]^Rgf[rt];
                     break;
                 case 42:    //slt
-                    this->showRegs();
                     if(Rgf[rs]<Rgf[rt]) Rgf[rd]=1;
                     else Rgf[rd]=0;
                     break;
@@ -183,7 +184,7 @@ void MipsCPU::run(const int run_by_step=0)
             if(run_by_step) return ;
 	    }//for
     } catch(runtime_error e ) {
-		
+        cout << e.what() << endl;
 	}
 }
 

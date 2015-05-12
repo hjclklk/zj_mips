@@ -23,7 +23,7 @@ public:
     MipsCPU();
     ~MipsCPU();
     void boot();
-    void run(const int);
+    void run(const int run_by_step=0);
     void showRegs();
 
 };
