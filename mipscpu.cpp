@@ -81,7 +81,6 @@ void MipsCPU::run(const int run_by_step=0)
                 case 36:    //and
                     Rgf[rd]=Rgf[rs]&Rgf[rt];
                     break;
-
                 case 42:    //slt
                     this->showRegs();
                     if(Rgf[rs]<Rgf[rt]) Rgf[rd]=1;
@@ -99,7 +98,6 @@ void MipsCPU::run(const int run_by_step=0)
                 MMU->sw(Rgf[rs]+dat, Rgf[rt]);
                 break;
             case 4:		//BEQ
-//                    this->showRegs();
                 if(Rgf[rs]==Rgf[rt]) PC+=(dat<<1);
                 break;
             case 5:
@@ -120,12 +118,6 @@ void MipsCPU::run(const int run_by_step=0)
 	        }
 
             if(run_by_step) return ;
-	//        if(refresh){	//VM refresh
-	//            for(int i=0; i<40*26; i++){
-	//                std::cout << (char)MMU->lh(i+CRTadr) << std::endl;
-	//				ZBHZ.draw(i%40,i/40,MMU.lh(i+CRTadr));
-	//            }	refresh=false;
-	//        }
 	    }//for
     } catch(exception e ) {
 		

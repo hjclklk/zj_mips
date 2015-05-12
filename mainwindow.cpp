@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "binary.h"
 #include <QString>
 #include <QStringList>
 #include <QDebug>
@@ -239,7 +240,7 @@ void MainWindow::on_pushButton_clicked()
                 continue;
             }
             if (DefineList[0] == "BLT"){
-                if (DefineList.size() != 4) throw QString("don't match MOVE instruction");
+                if (DefineList.size() != 4) throw QString("don't match BLT instruction");
                 assembleCodeList.append("slt ,  $at , "+DefineList[1]+" , "+DefineList[2]);
                 assembleCodeList.append("bne ,  $at , $zero , "+DefineList[3]);
                 line++;
@@ -249,7 +250,7 @@ void MainWindow::on_pushButton_clicked()
                 continue;
             }
             if (DefineList[0] == "BGT"){
-                if (DefineList.size() != 4) throw QString("don't match MOVE instruction");
+                if (DefineList.size() != 4) throw QString("don't match BGT instruction");
                 assembleCodeList.append("slt ,  $at , "+DefineList[2]+" , "+DefineList[1]);
                 assembleCodeList.append("bne ,  $at , $zero , "+DefineList[3]);
                 line++;
@@ -259,7 +260,7 @@ void MainWindow::on_pushButton_clicked()
                 continue;
             }
             if (DefineList[0] == "BLE"){
-                if (DefineList.size() != 4) throw QString("don't match MOVE instruction");
+                if (DefineList.size() != 4) throw QString("don't match BLE instruction");
                 assembleCodeList.append("slt ,  $at , "+DefineList[2]+" , "+DefineList[1]);
                 assembleCodeList.append("beq ,  $at , $zero , "+DefineList[3]);
                 line++;
@@ -269,7 +270,7 @@ void MainWindow::on_pushButton_clicked()
                 continue;
             }
             if (DefineList[0] == "BGE"){
-                if (DefineList.size() != 4) throw QString("don't match MOVE instruction");
+                if (DefineList.size() != 4) throw QString("don't match BGE instruction");
                 assembleCodeList.append("slt ,  $at , "+DefineList[1]+" , "+DefineList[2]);
                 assembleCodeList.append("beq ,  $at , $zero , "+DefineList[3]);
                 line++;
@@ -279,7 +280,7 @@ void MainWindow::on_pushButton_clicked()
                 continue;
             }
             if (DefineList[0] == "ABS"){
-                if (DefineList.size() != 3) throw QString("don't match MOVE instruction");
+                if (DefineList.size() != 3) throw QString("don't match ABS instruction");
                 assembleCodeList.append("sra ,  $at , "+DefineList[2]+" , 31");
                 assembleCodeList.append("xor , "+DefineList[1]+" , "+DefineList[2]+" , $at");
                 assembleCodeList.append("sub , "+DefineList[1]+" , "+DefineList[2]+" , $at");
@@ -377,7 +378,7 @@ void MainWindow::processMemory(QStringList MemoryList)
     QFile file("./data");
     file.open(QIODevice::WriteOnly);
     QDataStream out(&file);
-    QStringList dataForMemory = MemoryList[2].split(QRegExp("\\s*,\\s*"),QString::SkipEmptyParts);
+    QStringList dataForMemory = MemoryList[2].split(QRegExp("\\s*,?\\s*"),QString::SkipEmptyParts);
     int width = (MemoryList[1][1] == 'b')? 1 : (MemoryList[1].toStdString()[1] - '0');
     if (width == 1){
         foreach(QString tempData,dataForMemory){
@@ -440,10 +441,10 @@ void MainWindow::processTypeR(QStringList sentenceList,int line)
     if (mapForRegister.count(sentenceList[1]) == 0) throw QString("%1 don't match any register").arg(sentenceList[1]);
     if (mapForRegister.count(sentenceList[2]) == 0) throw QString("%1 don't match any register").arg(sentenceList[2]);
     if (mapForFunc.count(sentenceList[0]) == 0) throw QString("%1 don't match any function").arg(sentenceList[0]);
-//    qDebug() << sentenceList << endl;
+
+    ui->textBrowser->insertPlainText(mapForRegister.value(sentenceList[2]));
     ui->textBrowser->insertPlainText(mapForRegister.value(sentenceList[3]));
     ui->textBrowser->insertPlainText(mapForRegister.value(sentenceList[1]));
-    ui->textBrowser->insertPlainText(mapForRegister.value(sentenceList[2]));
     ui->textBrowser->insertPlainText(EmptyFive);
     ui->textBrowser->insertPlainText(mapForFunc.value(sentenceList[0]));
     ui->textBrowser->insertPlainText("\n");
@@ -758,4 +759,12 @@ void MainWindow::on_pushButton_4_clicked()
     myCpu = new cpu;
     this->hide();
     myCpu->show();
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    Binary myBinary;
+
+    this->ui->plainTextEdit->clear();
+    this->ui->plainTextEdit->insertPlainText(myBinary.binaryToMips(this->ui->textBrowser->toPlainText()));
 }
