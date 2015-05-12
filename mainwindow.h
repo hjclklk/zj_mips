@@ -69,6 +69,7 @@ private:
     QString DataStr;
     int memoryStart;
     cpu *myCpuWidget;
+    friend  class cpu;
 };
 
 #endif // MAINWINDOW_H

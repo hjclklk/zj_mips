@@ -2,7 +2,7 @@
 // Created by Shor on 2015/5/10.
 //
 
-#include "mipscpu.h"
+#include "MipsCPU.h"
 #include <cstring>
 #include <iostream>
 #include "MemoryManageUnit.h"
@@ -11,12 +11,11 @@
 using namespace std;
 MipsCPU::MipsCPU()
 {
-    Rgf[0]=0;           //$zero
-    Rgf[29]=0x7ffc;     //$sp=0x7ffc, on top of mem
-    MMU = new MemoryManageUnit( *this, MAXIUM);
-    PC=0x0040;          //text(instruction part of mem) start from 0x0040
-
     memset(Rgf,0,32*4);
+    Rgf[0]=0;	//$zero
+    Rgf[29]=0x7ffc;    //$sp=0x7ffc, on top of mem
+    MMU = new MemoryManageUnit( *this, MAXIUM);
+    PC=0x0040;      //text(instruction part of mem) start from 0x0040
 }
 
 void MipsCPU::boot()
@@ -26,15 +25,17 @@ void MipsCPU::boot()
     PC=0x0040;          //PC init
 }
 
-void MipsCPU::run(const int run_by_step)
+
+void MipsCPU::run(const int run_by_step=0)
 {
     int	IR, op, rd, rs, rt, sft, fun, dat, adr;
     int step=1;
-
+    
 	try{
 		for(;;){
 	        IR=MMU->lw(PC);
-	        std::cout <<"IR="<<std::hex<<IR<<std::endl;
+            std::cout <<"IR="<<std::hex<<IR<<std::endl;
+            std::cout <<"PC="<<std::hex<<PC<<std::endl;
 	        PC+=2;					// 16-bit/byte
 	        if(PC >= 0x1000) PC=0x0040;
 	        step++;

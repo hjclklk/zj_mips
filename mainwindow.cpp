@@ -193,12 +193,12 @@ void MainWindow::on_pushButton_clicked()
     mapForLabel.clear();
     mapForDefine.clear();
     // new file and empty file
-    QFile file("./data");
+    QFile file("d:\\data");
     file.open(QIODevice::WriteOnly);
     file.close();
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     QDataStream out(&file);
-    //out << qint8(01);
+    out << qint8(01);
     file.close();
     try{
 
@@ -302,7 +302,7 @@ void MainWindow::on_pushButton_clicked()
         foreach (sentence,assembleCodeList)
         {
             line++;
-            sentenceList = sentence.simplified().split(QRegExp("\\s*,\\s*"),QString::SkipEmptyParts);
+            sentenceList = sentence.simplified().split(QRegExp("\\s*[,?]\\s*"),QString::SkipEmptyParts);
 //            qDebug() << sentenceList.size();
             if (sentenceList.empty()) continue;
             //list_to_low(sentenceList);
@@ -370,7 +370,7 @@ void MainWindow::processMemory(QStringList MemoryList)
     // 5,6 "abcdefg",'a'
     mapForMemory.insert(MemoryList[0],memoryStart);
     bool ok;
-    QFile file("./data");
+    QFile file("d:\\data");
     file.open(QIODevice::WriteOnly);
     QDataStream out(&file);
     QStringList dataForMemory = MemoryList[2].split(QRegExp("\\s*,?\\s*"),QString::SkipEmptyParts);
@@ -422,8 +422,8 @@ void MainWindow::processTypeR(QStringList sentenceList,int line)
 {//!!发现不支持所有长度不为4的
 //        qDebug() << sentenceList << endl;
     if (sentenceList.size() != 4 && sentenceList[0]!="syscall" ) throw QString("This line don't match numbers of R function");//!! 这边R类型不一定是3个参数的...比如syscall    ui->textBrowser->insertPlainText(TypeR);
-    ui->textBrowser->insertPlainText(mapForType.value(sentenceList[0]));
     if (sentenceList.size() == 1 ) { //!! 这里仅是测试用，可能需要改一下
+		ui->textBrowser->insertPlainText(TypeR);
         ui->textBrowser->insertPlainText(EmptyFive);
         ui->textBrowser->insertPlainText(EmptyFive);
         ui->textBrowser->insertPlainText(EmptyFive);
@@ -436,7 +436,7 @@ void MainWindow::processTypeR(QStringList sentenceList,int line)
     if (mapForRegister.count(sentenceList[1]) == 0) throw QString("%1 don't match any register").arg(sentenceList[1]);
     if (mapForRegister.count(sentenceList[2]) == 0) throw QString("%1 don't match any register").arg(sentenceList[2]);
     if (mapForFunc.count(sentenceList[0]) == 0) throw QString("%1 don't match any function").arg(sentenceList[0]);
-
+    ui->textBrowser->insertPlainText(TypeR);
     ui->textBrowser->insertPlainText(mapForRegister.value(sentenceList[2]));
     ui->textBrowser->insertPlainText(mapForRegister.value(sentenceList[3]));
     ui->textBrowser->insertPlainText(mapForRegister.value(sentenceList[1]));
@@ -453,7 +453,7 @@ void MainWindow::processTypeJ(QStringList sentenceList,int line)
     ui->textBrowser->insertPlainText(mapForType.value(sentenceList[0]));
     //ui->textBrowser->insertPlainText(sentenceList[0]);
     QString str;
-    str = change_num_to_str(0x100000+mapForLabel.value(sentenceList[1])-1,26);
+    str = change_num_to_str(0x0020+mapForLabel.value(sentenceList[1])-1,26);
 //    ui->textBrowser->insertPlainText(":");
     ui->textBrowser->insertPlainText(str);
     ui->textBrowser->insertPlainText("\n");
@@ -656,36 +656,36 @@ void MainWindow::on_pushButton_2_clicked()
         return;
     }
     QString fileName = files.at(0);
-/*
-    bool ok;
-    QString s,s1;
-    FILE *f;
-    int i,j,len;
-    short int a,b,c;
-    s=ui->textBrowser->toPlainText();
-    //qDebug() << s;
-    const char *filecstr = fileName.toStdString().c_str();
-    len=s.length()/33;
-    f=fopen(filecstr,"wb");
-    for (i=0;i<len;i++)
-    {
-        s1=s.mid(i*33,32);
-        j=s1.toInt(&ok,2);
-        a=0x0000|j;//right part short
-        c=a;
-        a=(a>>8)&0x00ff;
-        c=c<<8;
-        a=a|c;
-        j=j>>16;//left part short
-        b=0x0000|j;
-        c=b;
-        b=(b>>8)&0x00ff;
-        c=c<<8;
-        b=b|c;
-        fwrite(&b,2,1,f);
-        fwrite(&a,2,1,f); //fixed something.
-    }
-    fclose(f);*/
+
+//    bool ok;
+//    QString s,s1;
+//    FILE *f;
+//    int i,j,len;
+//    short int a,b,c;
+//    s=ui->textBrowser->toPlainText();
+//    //qDebug() << s;
+//    const char *filecstr = fileName.toStdString().c_str();
+//    len=s.length()/33;
+//    f=fopen(filecstr,"wb");
+//    for (i=0;i<len;i++)
+//    {
+//        s1=s.mid(i*33,32);
+//        j=s1.toInt(&ok,2);
+//        a=0x0000|j;//right part short
+//        c=a;
+//        a=(a>>8)&0x00ff;
+//        c=c<<8;
+//        a=a|c;
+//        j=j>>16;//left part short
+//        b=0x0000|j;
+//        c=b;
+//        b=(b>>8)&0x00ff;
+//        c=c<<8;
+//        b=b|c;
+//        fwrite(&b,2,1,f);
+//        fwrite(&a,2,1,f); //fixed something.
+//    }
+//    fclose(f);
     QFile file(fileName);
     if (!file.open(QFile::WriteOnly)) {
         QMessageBox::warning(this, tr("Application"),
@@ -725,7 +725,7 @@ void MainWindow::on_pushButton_5_clicked()
                              .arg(file.errorString()));
         return;
     }
-    QFile infile("./data");
+    QFile infile("d:\\data");
     infile.open(QIODevice::ReadOnly);
     QDataStream out(&file);
     QDataStream in(&infile);
